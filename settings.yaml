@@ -1,0 +1,14 @@
+default:
+  DEBUG: true
+  ALLOWED_HOSTS:
+    - localhost
+    - 127.0.0.1
+  DATABASES:
+    default:
+      ENGINE: django.db.backends.postgresql
+      NAME: django_tutorial
+      USER: postgres
+      PASSWORD: <SECRET>
+      HOST: localhost
+      PORT: 5432
+      TIME_ZONE: Asia/Ho_Chi_Minh

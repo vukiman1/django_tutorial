@@ -1,0 +1,322 @@
+---
+description: Cấu trúc dự án Todo App
+globs:
+alwaysApply: true
+---
+
+# Memory Bank - Todo App Project
+
+## 🏴‍☠️ Tổng quan dự án
+
+**Todo App** - Nền tảng quản lý công việc và theo dõi cổ phiếu được xây dựng với Django + React + Tailwind CSS
+
+### Kiến trúc cốt lõi
+
+- **Backend**: Django 5.2.5 + PostgreSQL
+- **Frontend**: React + Tailwind CSS + shadcn/ui
+- **Quản lý cấu hình**: Dynaconf
+- **Database**: PostgreSQL
+
+## 📁 Cấu trúc dự án tham khảo nhanh
+
+### Cấu trúc Backend
+
+├── Dockerfile # Cấu hình build image
+└── README.md # Tài liệu dự án
+
+
+## 🎯 Quy ước và mẫu thiết kế chính
+
+### Quy ước đặt tên file
+- **Filenames**: `snake_case` (ví dụ: `todo_model.py`, `stock_view.py`)
+- **Classes**: `PascalCase` (ví dụ: `TodoModel`, `StockView`)
+- **Functions**: `snake_case` (ví dụ: `get_todos`, `create_stock`)
+- **Constants**: `UPPER_SNAKE_CASE` (ví dụ: `MAX_TODO_LENGTH`)
+
+### Mẫu thiết kế Backend
+
+#### Model Pattern
+```python
+class Todo(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        
+    def __str__(self):
+        return self.title
+```
+
+#### View Pattern
+```python
+def todo_list(request):
+    todos = Todo.objects.all()
+    context = {'todos': todos}
+    return render(request, 'todo/index.html', context)
+
+def todo_detail(request, pk):
+    todo = get_object_or_404(Todo, pk=pk)
+    context = {'todo': todo}
+    return render(request, 'todo/detail.html', context)
+```
+
+#### Form Pattern
+```python
+class TodoForm(forms.ModelForm):
+    class Meta:
+        model = Todo
+        fields = ['title', 'description', 'completed']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }
+```
+
+### Mẫu thiết kế Frontend
+
+#### Component Pattern
+```tsx
+interface TodoItemProps {
+  todo: Todo;
+  onToggle: (id: number) => void;
+}
+
+export function TodoItem({ todo, onToggle }: TodoItemProps) {
+  return (
+    <div className="flex items-center p-4 border-b">
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={() => onToggle(todo.id)}
+        className="mr-2"
+      />
+      <span className={todo.completed ? 'line-through' : ''}>
+        {todo.title}
+      </span>
+    </div>
+  );
+}
+```
+
+#### Page Pattern
+```tsx
+export default function TodoListPage() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  
+  useEffect(() => {
+    // Fetch todos from API
+    todoService.getTodos().then(setTodos);
+  }, []);
+  
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Danh sách công việc</h1>
+      {todos.map(todo => (
+        <TodoItem 
+          key={todo.id} 
+          todo={todo} 
+          onToggle={handleToggle} 
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+## 🔧 Quy trình phát triển
+
+### Lệnh cài đặt
+```bash
+# Cài đặt dependencies Python
+pip install -r requirements.txt
+
+# Cài đặt dependencies Frontend
+cd frontend
+npm install
+
+# Tạo và áp dụng migrations
+python manage.py makemigrations
+python manage.py migrate
+
+# Chạy server phát triển
+python manage.py runserver
+
+# Chạy frontend dev server
+cd frontend
+npm start
+```
+
+### Tạo code
+```bash
+# Tạo ứng dụng Django mới
+python manage.py startapp new_app
+
+# Tạo model mới
+# Thêm vào file models.py
+
+# Tạo migration
+python manage.py makemigrations
+
+# Áp dụng migration
+python manage.py migrate
+```
+
+### Kiểm thử
+```bash
+# Chạy tất cả tests
+pytest
+
+# Chạy tests cho một ứng dụng cụ thể
+pytest todo/
+
+# Chạy tests với coverage
+pytest --cov=.
+```
+
+## 🎨 Hướng dẫn UI/UX
+
+### Tổ chức Component
+- **Common UI**: `frontend/src/components/common/`
+- **Todo Components**: `frontend/src/components/todo/`
+- **Stock Components**: `frontend/src/components/stock/`
+
+### Styling
+- **Primary**: Tailwind CSS utility classes
+- **Components**: shadcn/ui cho thiết kế nhất quán
+- **Custom CSS**: CSS modules cho styles phức tạp
+
+## 🗄️ Mẫu Database
+
+### Migration Structure
+```python
+class Migration(migrations.Migration):
+    dependencies = [
+        ('todo', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='TodoCategory',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=100)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+            ],
+        ),
+        migrations.AddField(
+            model_name='todo',
+            field=models.ForeignKey(null=True, on_delete=models.SET_NULL, to='todo.todocategory'),
+        ),
+    ]
+```
+
+## 🔒 Bảo mật & Phân quyền
+
+### Xác thực
+- **Session-based**: Django session middleware
+- **API tokens**: Cho tích hợp bên ngoài
+- **OAuth**: Tích hợp Google, GitHub
+
+### Phân quyền
+- **Permissions**: Django permissions framework
+- **Groups**: Nhóm người dùng với quyền cụ thể
+- **Middleware**: Bảo vệ cấp route
+
+### Validation
+- **Input**: Django forms và validators
+- **Output**: Serializers
+- **Errors**: Custom exception handlers
+
+## 📊 Tối ưu hiệu suất
+
+### Backend
+- **Eager Loading**: Preload relationships với select_related và prefetch_related
+- **Caching**: Django cache framework với Redis
+- **Indexing**: Database indexes cho các truy vấn thường xuyên
+
+### Frontend
+- **Memoization**: useMemo cho tính toán tốn kém
+- **Lazy Loading**: Code splitting và dynamic imports
+- **Optimistic Updates**: UX tốt hơn cho mutations
+
+## 🧪 Chiến lược kiểm thử
+
+### Loại kiểm thử
+- **Unit**: Các hàm và phương thức riêng lẻ
+- **Integration**: API endpoints và views
+- **E2E**: Luồng người dùng hoàn chỉnh
+- **Component**: Kiểm thử React component
+
+### Mẫu kiểm thử
+```python
+class TodoModelTests(TestCase):
+    def setUp(self):
+        Todo.objects.create(title="Test Todo", description="Test Description")
+        
+    def test_todo_creation(self):
+        todo = Todo.objects.get(title="Test Todo")
+        self.assertEqual(todo.description, "Test Description")
+        self.assertFalse(todo.completed)
+```
+
+## 🚀 Triển khai & DevOps
+
+### Thiết lập môi trường
+- **Development**: SQLite local
+- **Staging**: PostgreSQL với dữ liệu test
+- **Production**: Managed database services
+
+### Cấu hình
+- **Environment**: `.env` files cho secrets
+- **Dynaconf**: `.secrets.yaml` và `settings.yaml`
+- **Database**: Multiple connection configs
+
+### Giám sát
+- **Logging**: Django logging framework
+- **Error Tracking**: Sentry integration
+- **Health Checks**: Endpoints sẵn sàng và sống
+
+## 📚 Dependencies chính
+
+### Backend
+- `django`: Framework core
+- `psycopg2-binary`: PostgreSQL adapter
+- `dynaconf`: Quản lý cấu hình
+- `pytest`: Testing framework
+- `pytest-django`: Django test integration
+
+### Frontend
+- `react`: Thư viện UI
+- `tailwindcss`: Styling
+- `shadcn/ui`: Thư viện component
+- `axios`: HTTP client
+- `react-query`: Data fetching
+
+### Development
+- `typescript`: Type safety
+- `eslint`: Code linting
+- `prettier`: Code formatting
+- `jest`: Testing framework
+
+## 🎯 Tham khảo nhanh cho các tác vụ thông dụng
+
+### Tạo tính năng mới
+1. Tạo model: Thêm vào `models.py`
+2. Tạo migration: `python manage.py makemigrations`
+3. Áp dụng migration: `python manage.py migrate`
+4. Tạo view: Thêm vào `views.py`
+5. Cập nhật URL: Thêm vào `urls.py`
+6. Tạo template: Thêm vào `templates/`
+7. Tạo component React: Thêm vào `frontend/src/components/`
+8. Tạo trang React: Thêm vào `frontend/src/pages/`
+
+### Thao tác Database
+- **Migration**: `python manage.py migrate`
+- **Rollback**: `python manage.py migrate app_name 0001_previous_migration`
+- **Shell**: `python manage.py shell`
+- **SQL Shell**: `python manage.py dbshell`
+
+Ngân hàng bộ nhớ này phục vụ như tài liệu tham khảo tối ưu để duy trì tính nhất quán và tuân thủ các mẫu thiết kế đã thiết lập trong toàn bộ codebase! 🚢⚓

@@ -1,0 +1,62 @@
+---
+alwaysApply: true
+---
+
+# Quy tắc phát triển dự án Todo App
+
+## Kiến trúc dự án
+
+- Backend: Django 5.2.5 + PostgreSQL
+- Frontend: React + Tailwind CSS + shadcn/ui
+- Quản lý cấu hình: Dynaconf
+
+## Quy tắc chung
+
+- Sử dụng tiếng Việt trong comment và tài liệu
+- Tuân thủ PEP 8 cho code Python
+- Sử dụng TypeScript cho phát triển frontend
+
+## Cấu trúc thư mục
+
+- Tách biệt rõ ràng giữa các ứng dụng Django (todo, stock)
+- Mỗi ứng dụng có cấu trúc MVC rõ ràng (models, views, templates)
+- Frontend React được tổ chức theo components, pages, hooks
+
+## Database
+
+- Sử dụng PostgreSQL cho môi trường production
+- Áp dụng migrations cho mọi thay đổi schema
+- Tạo indexes cho các trường thường xuyên được query
+
+## Bảo mật
+
+- Không hard-code credentials trong code
+- Sử dụng Dynaconf để quản lý biến môi trường
+- Áp dụng CSRF protection cho tất cả forms
+
+## Kiểm thử
+
+- Viết unit tests cho các models và views
+- Sử dụng pytest làm framework kiểm thử chính
+- Đảm bảo test coverage tối thiểu 80%
+
+## CI/CD
+
+- Sử dụng GitHub Actions cho CI/CD
+- Tự động chạy tests khi có pull request
+- Triển khai tự động khi merge vào nhánh main
+
+## Logging
+
+- Cấu hình logging chi tiết cho môi trường production
+- Ghi log tất cả các lỗi và hành động quan trọng
+- Định dạng log dễ đọc và phân tích
+
+## Performance
+
+- Tối ưu hóa database queries
+- Sử dụng caching khi cần thiết
+- Lazy loading cho các tài nguyên lớn
+  alwaysApply: true
+
+---

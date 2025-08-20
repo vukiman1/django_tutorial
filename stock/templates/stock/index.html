@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      .price-card {
+        transition: all 0.3s ease;
+      }
+      .price-card:hover {
+        transform: translateY(-5px);
+      }
+      .price-up {
+        color: #10b981;
+      }
+      .price-down {
+        color: #ef4444;
+      }
+      .bg-gradient-market {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-market py-6 shadow-md">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center">
+          <h1 class="text-3xl md:text-4xl font-bold text-white">
+            <i class="fas fa-chart-line mr-2"></i>Stock Tracker
+          </h1>
+          <a
+            href="/"
+            class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white py-2 px-4 rounded-lg transition-colors duration-300"
+          >
+            <i class="fas fa-home mr-2"></i>Home
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+      <!-- Price Overview -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Current Price -->
+        <div class="price-card bg-white rounded-xl shadow-md p-6">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-lg text-gray-500">Current Price</h2>
+            <span class="text-blue-500">
+              <i class="fas fa-coins"></i>
+            </span>
+          </div>
+          <div class="flex items-end">
+            <span class="text-3xl font-bold text-gray-800">
+              {{ coin_data.price|floatformat:2 }} 
+            </span>
+            <span class="ml-2 text-sm {% if percent_change >= 0 %}price-up{% else %}price-down{% endif %}">
+                {% if percent_change >= 0 %}
+                  <i class="fas fa-caret-up"></i>
+                {% else %}
+                  <i class="fas fa-caret-down"></i>
+                {% endif %}
+                {{ percent_change|floatformat:2 }}%
+              </span>
+          </div>
+        </div>
+
+        <!-- 24h High -->
+        <div class="price-card bg-white rounded-xl shadow-md p-6">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-lg text-gray-500">24h High</h2>
+            <span class="text-green-500">
+              <i class="fas fa-arrow-trend-up"></i>
+            </span>
+          </div>
+          <div class="flex items-end">
+            <span class="text-3xl font-bold text-gray-800">
+              {{ coin_data.change_24h_high|floatformat:2 }}
+            </span>
+            <span class="ml-2 text-sm price-up">
+              <i class="fas fa-caret-up"></i> High
+            </span>
+          </div>
+        </div>
+
+        <!-- 24h Low -->
+        <div class="price-card bg-white rounded-xl shadow-md p-6">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-lg text-gray-500">24h Low</h2>
+            <span class="text-red-500">
+              <i class="fas fa-arrow-trend-down"></i>
+            </span>
+          </div>
+          <div class="flex items-end">
+            <span class="text-3xl font-bold text-gray-800">
+              {{ coin_data.change_24h_low|floatformat:2 }}
+            </span>
+            <span class="ml-2 text-sm price-down">
+              <i class="fas fa-caret-down"></i> Low
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- Chart Section -->
+      <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-semibold text-gray-800">
+            <i class="fas fa-chart-area mr-2"></i>Price History
+          </h2>
+        </div>
+        <div class="h-64">
+          <canvas id="priceChart"></canvas>
+        </div>
+      </div>
+      <div>
+      </div>
+    <script>
+      // Sample data for the chart
+      const ctx = document.getElementById("priceChart").getContext("2d");
+      const list_last_12_coins = [
+      {% for coin in list_last_12_coins reversed %}
+      {{ coin.price }},
+    {% endfor %}
+      ];
+      const priceChart = new Chart(ctx, {
+        type: "line",
+        data: {
+        labels: list_last_12_coins,
+          datasets: [
+            {
+              label: "Price (USD)",
+              data: list_last_12_coins,
+              borderColor: "#3B82F6",
+              backgroundColor: "rgba(59, 130, 246, 0.1)",
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              grid: {
+                display: true,
+                color: "rgba(0, 0, 0, 0.05)",
+              },
+            },
+            x: {
+              grid: {
+                display: false,
+              },
+            },
+          },
+        },
+      });
+
+      // Time filter buttons
+      document.querySelectorAll(".time-filter").forEach((button) => {
+        button.addEventListener("click", function () {
+          // Remove active class from all buttons
+          document.querySelectorAll(".time-filter").forEach((btn) => {
+            btn.classList.remove("bg-blue-100", "text-blue-600");
+            btn.classList.add("bg-gray-100", "text-gray-600");
+          });
+
+          // Add active class to clicked button
+          this.classList.remove("bg-gray-100", "text-gray-600");
+          this.classList.add("bg-blue-100", "text-blue-600");
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home - Choose Your App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-10px);
+      }
+      .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .bg-gradient-2 {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      }
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient py-6 shadow-lg">
+      <div class="container mx-auto px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-white text-center">
+          <i class="fas fa-home mr-3"></i>Welcome to My Apps
+        </h1>
+        <p class="text-blue-100 text-center mt-2">
+          Choose an application to get started
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-12">
+      <div class="max-w-4xl mx-auto">
+        <!-- Cards Container -->
+        <!-- Admin Button -->
+        <div class="flex justify-center mb-8">
+          <a href="/admin" class="inline-block">
+            <button
+              class="bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 text-white font-bold py-3 px-6 rounded-lg flex items-center"
+            >
+              <i class="fas fa-user-shield text-xl mr-2"></i>
+              Admin Dashboard
+              <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+          </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- TodoList Card -->
+          <div
+            class="card-hover bg-white rounded-2xl shadow-xl overflow-hidden"
+          >
+            <div class="h-48 bg-gradient-2 flex items-center justify-center">
+              <i
+                class="fas fa-clipboard-check text-white text-7xl animate-float"
+              ></i>
+            </div>
+            <div class="p-6">
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">Todo List</h2>
+              <p class="text-gray-600 mb-6">
+                Organize your tasks, manage your time efficiently, and boost
+                your productivity with our Todo List app.
+              </p>
+              <a href="/todo" class="block w-full">
+                <button
+                  class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center"
+                >
+                  <i class="fas fa-tasks mr-2"></i>
+                  Open Todo List
+                </button>
+              </a>
+            </div>
+          </div>
+
+          <!-- Lottery Card -->
+          <div
+            class="card-hover bg-white rounded-2xl shadow-xl overflow-hidden"
+          >
+            <div class="h-48 bg-gradient flex items-center justify-center">
+              <i
+                class="fas fa-chart-line text-white text-7xl animate-float"
+              ></i>
+            </div>
+            <div class="p-6">
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                Stock Tracker
+              </h2>
+              <p class="text-gray-600 mb-6">
+                Track your stocks and investments with our Stock Tracker app!
+                Monitor your portfolio, analyze market trends, and make informed
+                investment decisions.
+              </p>
+              <a href="/stock" class="block w-full">
+                <button
+                  class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center"
+                >
+                  <i class="fas fa-chart-line mr-2"></i>
+                  Open Stock Tracker
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6">
+      <div class="container mx-auto px-4 text-center">
+        <p>&copy; 2025 My Apps Collection</p>
+        <div class="mt-2 flex justify-center space-x-4">
+          <a
+            href="#"
+            class="text-gray-400 hover:text-white transition-colors duration-300"
+          >
+            <i class="fab fa-github"></i>
+          </a>
+          <a
+            href="#"
+            class="text-gray-400 hover:text-white transition-colors duration-300"
+          >
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a
+            href="#"
+            class="text-gray-400 hover:text-white transition-colors duration-300"
+          >
+            <i class="fab fa-linkedin"></i>
+          </a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
