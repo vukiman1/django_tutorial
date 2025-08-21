@@ -1,5 +1,5 @@
 from celery.schedules import crontab
-from stock.celery import app, test, add, bitcoin_task
+from stock.celery import app, test, bitcoin_task
 from celery import Celery
 from django.core.management.base import BaseCommand
 import subprocess

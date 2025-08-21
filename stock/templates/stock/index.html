@@ -26,6 +26,13 @@
       .bg-gradient-market {
         background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
       }
+      .price-change {
+        animation: flash 1s;
+      }
+      @keyframes flash {
+        0% { background-color: rgba(59, 130, 246, 0.3); }
+        100% { background-color: transparent; }
+      }
     </style>
   </head>
   <body class="bg-gray-100 min-h-screen">
@@ -59,10 +66,10 @@
             </span>
           </div>
           <div class="flex items-end">
-            <span class="text-3xl font-bold text-gray-800">
+            <span id="current-price" class="text-3xl font-bold text-gray-800">
               {{ coin_data.price|floatformat:2 }} 
             </span>
-            <span class="ml-2 text-sm {% if percent_change >= 0 %}price-up{% else %}price-down{% endif %}">
+            <span id="percent-change" class="ml-2 text-sm {% if percent_change >= 0 %}price-up{% else %}price-down{% endif %}">
                 {% if percent_change >= 0 %}
                   <i class="fas fa-caret-up"></i>
                 {% else %}
@@ -82,7 +89,7 @@
             </span>
           </div>
           <div class="flex items-end">
-            <span class="text-3xl font-bold text-gray-800">
+            <span id="high-price" class="text-3xl font-bold text-gray-800">
               {{ coin_data.change_24h_high|floatformat:2 }}
             </span>
             <span class="ml-2 text-sm price-up">
@@ -100,7 +107,7 @@
             </span>
           </div>
           <div class="flex items-end">
-            <span class="text-3xl font-bold text-gray-800">
+            <span id="low-price" class="text-3xl font-bold text-gray-800">
               {{ coin_data.change_24h_low|floatformat:2 }}
             </span>
             <span class="ml-2 text-sm price-down">
@@ -115,6 +122,12 @@
           <h2 class="text-xl font-semibold text-gray-800">
             <i class="fas fa-chart-area mr-2"></i>Price History
           </h2>
+          <div class="flex items-center">
+            <span id="last-update" class="text-sm text-gray-500 mr-4">Last update: Just now</span>
+            <button id="refresh-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg text-sm">
+              <i class="fas fa-sync-alt mr-1"></i> Refresh
+            </button>
+          </div>
         </div>
         <div class="h-64">
           <canvas id="priceChart"></canvas>
@@ -123,7 +136,7 @@
       <div>
       </div>
     <script>
-      // Sample data for the chart
+      // Initial data for the chart
       const ctx = document.getElementById("priceChart").getContext("2d");
       const list_last_12_coins = [
       {% for coin in list_last_12_coins reversed %}
@@ -169,6 +182,87 @@
             },
           },
         },
+      });
+
+      // Function to fetch latest Bitcoin data
+      async function fetchLatestData() {
+        try {
+          const response = await fetch('/stock/api/bitcoin/latest/');
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          return null;
+        }
+      }
+
+      // Function to update UI with new data
+      function updateUI(data) {
+        if (!data) return;
+        
+        // Update price elements
+        const currentPrice = document.getElementById('current-price');
+        const highPrice = document.getElementById('high-price');
+        const lowPrice = document.getElementById('low-price');
+        const percentChange = document.getElementById('percent-change');
+        const lastUpdate = document.getElementById('last-update');
+        
+        // Add animation class
+        currentPrice.classList.add('price-change');
+        highPrice.classList.add('price-change');
+        lowPrice.classList.add('price-change');
+        
+        // Update values
+        currentPrice.textContent = parseFloat(data.price).toFixed(2);
+        highPrice.textContent = parseFloat(data.change_24h_high).toFixed(2);
+        lowPrice.textContent = parseFloat(data.change_24h_low).toFixed(2);
+        
+        // Update percent change
+        const percentChangeValue = data.percent_change;
+        percentChange.textContent = `${percentChangeValue >= 0 ? '↑' : '↓'} ${Math.abs(percentChangeValue).toFixed(2)}%`;
+        percentChange.className = `ml-2 text-sm ${percentChangeValue >= 0 ? 'price-up' : 'price-down'}`;
+        
+        // Update last update time
+        const now = new Date();
+        lastUpdate.textContent = `Last update: ${now.toLocaleTimeString()}`;
+        
+        // Update chart
+        priceChart.data.datasets[0].data.push(parseFloat(data.price));
+        priceChart.data.datasets[0].data.shift();
+        priceChart.update();
+        
+        // Remove animation class after animation completes
+        setTimeout(() => {
+          currentPrice.classList.remove('price-change');
+          highPrice.classList.remove('price-change');
+          lowPrice.classList.remove('price-change');
+        }, 1000);
+      }
+
+      // Set up auto-refresh
+      let refreshInterval;
+      
+      function startAutoRefresh(interval = 4000) {
+        if (refreshInterval) clearInterval(refreshInterval);
+        
+        refreshInterval = setInterval(async () => {
+          const data = await fetchLatestData();
+          updateUI(data);
+        }, interval);
+      }
+      
+      // Start auto-refresh when page loads (every 10 seconds)
+      document.addEventListener('DOMContentLoaded', () => {
+        startAutoRefresh();
+        
+        // Manual refresh button
+        document.getElementById('refresh-btn').addEventListener('click', async () => {
+          const data = await fetchLatestData();
+          updateUI(data);
+        });
       });
 
       // Time filter buttons

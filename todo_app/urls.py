@@ -22,7 +22,7 @@ from todo import views as todo_views
 
 urlpatterns = [
     path("", todo_views.home, name="home"),
-    path("todo", include("todo.urls")),
-    path("stock", include("stock.urls")),
+    path("todo/", include("todo.urls")),
+    path("stock/", include("stock.urls")),
     path("admin/", admin.site.urls),
 ]

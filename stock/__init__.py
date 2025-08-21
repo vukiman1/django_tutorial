@@ -1,1 +1,1 @@
-from stock.management.commands import runscheduler
+from stock.management.commands import runscheduler, runworker
