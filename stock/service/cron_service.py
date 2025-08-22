@@ -21,7 +21,7 @@ def save_bitcoin_data():
         timestamp=timestamp,
         defaults={
             "name": name,
-            "price": price + random.randint(-50, 50),
+            "price": round(price * (1 + random.uniform(-0.03, 0.03)), 2),
             "change_24h_high": change_24h_high,
             "change_24h_low": change_24h_low,
         },
