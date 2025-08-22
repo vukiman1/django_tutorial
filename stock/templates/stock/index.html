@@ -245,7 +245,7 @@
       // Set up auto-refresh
       let refreshInterval;
       
-      function startAutoRefresh(interval = 4000) {
+      function startAutoRefresh(interval = 8000) {
         if (refreshInterval) clearInterval(refreshInterval);
         
         refreshInterval = setInterval(async () => {
@@ -254,7 +254,6 @@
         }, interval);
       }
       
-      // Start auto-refresh when page loads (every 10 seconds)
       document.addEventListener('DOMContentLoaded', () => {
         startAutoRefresh();
         
@@ -265,7 +264,6 @@
         });
       });
 
-      // Time filter buttons
       document.querySelectorAll(".time-filter").forEach((button) => {
         button.addEventListener("click", function () {
           // Remove active class from all buttons

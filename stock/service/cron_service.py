@@ -1,6 +1,7 @@
 from todo_app.settings import settings
 from stock.service.api import get_data_from_api
 import time
+import random
 
 api = settings.API_URL
 api_key = settings.API_KEY
@@ -20,7 +21,7 @@ def save_bitcoin_data():
         timestamp=timestamp,
         defaults={
             "name": name,
-            "price": price,
+            "price": price + random.randint(-50, 50),
             "change_24h_high": change_24h_high,
             "change_24h_low": change_24h_low,
         },

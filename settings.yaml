@@ -1,6 +1,7 @@
 default:
   DEBUG: true
   ALLOWED_HOSTS:
+    - 29958dde6601.ngrok-free.app
     - localhost
     - 127.0.0.1
   DATABASES:

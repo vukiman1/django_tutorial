@@ -16,7 +16,7 @@ def index(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Công việc đã được thêm thành công!")
-            return redirect("todo")
+            return redirect("todo:index")
     form = TodoForm()
 
     page = {
@@ -31,7 +31,7 @@ def remove(request, item_id):
     item = Todo.objects.get(id=item_id)
     item.delete()
     messages.info(request, "Item removed!")
-    return redirect("todo")
+    return redirect("todo:index")
 
 
 def lottery(request):

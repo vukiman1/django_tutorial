@@ -125,6 +125,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.app",
+    "https://2ea9bd6de0d6.ngrok-free.app",
+]
 import dynaconf
 
 settings = dynaconf.DjangoDynaconf(__name__, MERGE_ENABLED_FOR_DYNACONF=True)
